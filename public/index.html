@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX Task Tracker</title>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <style>
+        /* Base styles for HTMX indicator */
+        .htmx-indicator {
+            display: none;
+            transition: opacity 0.3s ease-in;
+        }
+
+        .htmx-request .htmx-indicator { display: block; }
+        .htmx-request.htmx-indicator { display: block; }
+
+        /* --- HTMX ANIMATIONS --- */
+        
+        /* Base transition for list items */
+        #task-list li {
+            transition: all 0.3s ease-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 1. Fade OUT animation (Fires before an element is deleted) */
+        .htmx-swapping {
+            opacity: 0 !important;
+            transform: scale(0.95) !important;
+        }
+
+        /* 2. Fade IN animation (Fires when a new element is added to DOM) */
+        .htmx-added {
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const htmlElement = document.documentElement; 
+            const themeToggleBtn = document.getElementById('theme-toggle');
+
+            const savedTheme = localStorage.getItem('bulma-theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                htmlElement.setAttribute('data-theme', savedTheme);
+            } else if (systemPrefersDark) {
+                htmlElement.setAttribute('data-theme', 'dark');
+            } else {
+                htmlElement.setAttribute('data-theme', 'light');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('bulma-theme', newTheme);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container" style="max-width: 600px;">
+            
+            <div class="is-flex is-justify-content-flex-end mb-3">
+                <button id="theme-toggle" class="button is-small is-rounded is-light">
+                    Toggle Theme 🌓
+                </button>
+            </div>
+
+            <div class="has-text-centered mb-5">
+                <h1 class="title" id="title">
+                    My Tasks
+                </h1>
+                <p class="subtitle">
+                    My first website with <strong>Bulma</strong> & HTMX!
+                </p>
+            </div>
+
+            <div class="box">
+                <form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
+                    <div class="field has-addons mb-4">
+                        <div class="control is-expanded">
+                            <input class="input" type="text" name="task" required placeholder="What needs to be done?">
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary" type="submit">
+                                <strong>Add Task</strong>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <hr class="has-background-light">
+
+                <div id="loading-bar" class="htmx-indicator mb-4">
+                    <progress class="progress is-small is-primary" max="100">Loading...</progress>
+                </div>
+
+                <ul id="task-list" class="content" hx-get="/tasks" hx-indicator="#loading-bar" hx-trigger="load">
+                </ul>
+            </div>
+
+        </div>
+    </section>
+</body>
+
+</html>
