@@ -85,7 +85,7 @@
             </div>
 
             <div class="box">
-                <form hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
+                <form hx-post="/api/tasks" hx-target="#task-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
                     <div class="field has-addons mb-4">
                         <div class="control is-expanded">
                             <input class="input" type="text" name="task" required placeholder="What needs to be done?">
@@ -104,7 +104,7 @@
                     <progress class="progress is-small is-primary" max="100">Loading...</progress>
                 </div>
 
-                <ul id="task-list" class="content" hx-get="/tasks" hx-indicator="#loading-bar" hx-trigger="load">
+                <ul id="task-list" class="content" hx-get="/api/tasks" hx-indicator="#loading-bar" hx-trigger="load">
                 </ul>
             </div>
 

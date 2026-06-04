@@ -4,7 +4,6 @@ const app = express();
 
 // Middleware to parse form data and serve static files
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
 
 // In-memory database
 let tasks = [
@@ -20,7 +19,7 @@ const renderTask = (task) => `
     <span class="is-size-6">${task.text}</span>
     <button 
         class="button is-danger is-small is-outlined"
-        hx-delete="/tasks/${task.id}" 
+        hx-delete="/api/tasks/${task.id}" 
         hx-target="#task-${task.id}" 
         hx-swap="outerHTML swap:300ms"> Delete
     </button>
